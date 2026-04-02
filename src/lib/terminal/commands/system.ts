@@ -86,7 +86,7 @@ export function executeNeofetch(theme: Theme): CommandResult {
 
   const infoLines = [
     `${bold(colorize('nexus', c.green))}@${bold(colorize('nexus', c.green))}`,
-    `${colorize('-' * 20, c.cyan)}`,
+    `${colorize('-'.repeat(20), c.cyan)}`,
     `${bold(colorize('OS', c.red))}: NEXUS OS 2.0.0 x86_64`,
     `${bold(colorize('Host', c.red))}: NEXUS Virtual Machine`,
     `${bold(colorize('Kernel', c.red))}: 2.0.0-nexus`,
