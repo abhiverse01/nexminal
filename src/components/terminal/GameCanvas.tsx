@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TerminalSession, CommandResult, GameState, TerminalLine } from '@/lib/terminal/types';
-import { handleGameInput, renderGame } from '@/lib/terminal';
+import { handleGameKey, getCurrentGameRender } from '@/lib/terminal';
 
 interface GameCanvasProps {
   session: TerminalSession;
@@ -15,11 +15,8 @@ export default function GameCanvas({ session, theme, onExitGame, onGameUpdate }:
   const containerRef = useRef<HTMLDivElement>(null);
 
   const renderResult = useMemo<CommandResult>(() => {
-    if (session.gameState && session.gameMode !== 'none') {
-      return renderGame(session.gameMode, session.gameState);
-    }
-    return { output: '', lines: [], exitCode: 0 };
-  }, [session.gameState, session.gameMode]);
+    return getCurrentGameRender(session) || { output: '', lines: [], exitCode: 0 };
+  }, [session]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     e.preventDefault();
@@ -34,8 +31,8 @@ export default function GameCanvas({ session, theme, onExitGame, onGameUpdate }:
       return;
     }
 
-    const { updatedSession, result } = handleGameInput(session, e.key);
-    onGameUpdate(updatedSession.gameState!);
+    const { updatedSession } = handleGameKey(session, e.key);
+    if (updatedSession.gameState) onGameUpdate(updatedSession.gameState);
   }, [session, onExitGame, onGameUpdate]);
 
   // Focus on mount

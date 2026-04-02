@@ -71,3 +71,31 @@ Built a full-featured browser-based terminal emulator called "NEXUS Terminal v2.
 - **All TypeScript** with proper type safety
 - **No external API dependencies**
 - **Responsive** full-screen design
+
+---
+## Task ID: 2 - vercel-build-fix
+### Work Task
+Fix Vercel build failure caused by missing module exports in GameCanvas.tsx
+
+### Root Cause Analysis
+Three issues were found and fixed:
+
+1. **BUILD BREAKER: `GameCanvas.tsx` line 5** — Imported `handleGameInput` and `renderGame` from `@/lib/terminal`, but neither function is exported from `src/lib/terminal/index.ts`. The index imports them from `./commands` but only uses them internally (not re-exported). The correct exports are `handleGameKey` (which wraps `handleGameInput`) and `getCurrentGameRender` (which wraps `renderGame`).
+
+2. **RUNTIME BUG: `GameCanvas.tsx` line 37** — Was calling `handleGameInput(session, e.key)` and destructuring `{ updatedSession, result }`, but `handleGameInput` returns `{ newState, result }` — so `updatedSession` was `undefined`, causing a crash. Fixed by using `handleGameKey(session, e.key)` which correctly returns `{ updatedSession, result }`.
+
+3. **DEAD CODE: `Terminal.tsx` line 7** — Imported `handleGameKey` and `getCurrentGameRender` but never used them. Removed unused imports.
+
+4. **LINT ERROR** — `useMemo` in GameCanvas had dependency mismatch `[session.gameState, session.gameMode]` but the inferred dependency was `session` (since `getCurrentGameRender(session)` takes the whole object). Fixed dependency to `[session]`.
+
+5. **NEXT CONFIG** — Removed `output: "standalone"` (not needed for Vercel), set `ignoreBuildErrors: false` for strict TS checking.
+
+### Files Modified
+- `src/components/terminal/GameCanvas.tsx` — Fixed imports and function calls
+- `src/components/terminal/Terminal.tsx` — Removed unused imports
+- `next.config.ts` — Cleaned up config
+
+### Verification
+- ESLint: 0 errors, 1 warning (expected font warning)
+- Dev server: Compiles clean, page returns HTTP 200
+- All module exports verified across 40+ files

@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { TerminalSession, TerminalLine, FileNode, CommandResult, GameState, Theme, CompletionResult } from '@/lib/terminal/types';
 import {
   createSession, createInitialOutput, getFileSystem, getTabCompletions,
-  executeCommand, handleGameKey, getCurrentGameRender, getTheme, getThemeNames
+  executeCommand, getTheme, getThemeNames
 } from '@/lib/terminal';
 import { CommandHistory } from '@/lib/terminal/commandHistory';
 import TerminalOutput from './TerminalOutput';
